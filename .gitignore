@@ -1,0 +1,10 @@
+# OSX
+.DS_Store
+
+# WebStorm
+.idea/*
+
+# NPM
+node_modules/*
+
+*.log
