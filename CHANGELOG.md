@@ -2,6 +2,11 @@
 ***
 * 
 
+### 0.2.1
+***
+* Removed processor callback as it's not needed from the ensureRabbitMQ callback.
+* Updated associated unit tests.
+
 ### 0.2.0
 ***
 * Added joi validation to incoming config.
