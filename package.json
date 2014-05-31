@@ -1,6 +1,6 @@
 {
     "name": "rabbitmq-helper",
-    "version": "0.1.0",
+    "version": "0.2.0",
     "description": "wrapper of node-rabbit-wrap that wraps node.amqp",
     "main": "lib/rabbitmq-helper.js",
     "directories": {
@@ -34,6 +34,7 @@
     },
     "private": true,
     "dependencies": {
-        "rabbit-wrapper": "git://github.com/tagular/node-rabbit-wrap.git#1.0.3"
+        "rabbit-wrapper": "git://github.com/tagular/node-rabbit-wrap.git#1.0.3",
+        "joi": "~4.5.0"
     }
 }

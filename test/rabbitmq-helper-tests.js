@@ -5,31 +5,37 @@ process.env.NODE_ENV = 'test';
 var stubs = {};
 var should = require('should');
 
-var config = {
-    connection: {
-        host: '127.0.0.1',
-        options: {
-            reconnect: true
+function generateConfig(mocked) {
+    var result = {
+        connection: {
+            host: '127.0.0.1',
+            options: {
+                reconnect: true
+            }
+        },
+        exchange: {
+            name: 'testing-exchange',
+            options: {
+                type: 'fanout',
+                durable: false,
+                autoDelete: false
+            }
+        },
+        queue: {
+            name: 'testing-queue',
+            options: {
+                routingKey: 'all-routing',
+                durable: true,
+                autoDelete: false,
+                prefetchCount: 1
+            }
         }
-    },
-    exchange: {
-        name: 'testing-exchange',
-        options: {
-            type: 'fanout',
-            durable: false,
-            autoDelete: false
-        }
-    },
-    queue: {
-        name: 'testing-queue',
-        options: {
-            routingKey: 'all-routing',
-            durable: true,
-            autoDelete: false,
-            prefetchCount: 1
-        }
+    };
+    if (mocked) {
+        result.mocking = {};
     }
-};
+    return result;
+}
 
 var rabbitMQHelper = require('../lib/rabbitmq-helper');
 var helper;
@@ -45,27 +51,24 @@ describe('RabbitMQ Helper Tests', function () {
                 console.log(err);
             }
         }
+        helper = null;
         done();
     });
     describe('Initializing', function () {
-        describe('with no params', function () {
-            it('should be successful', function (done) {
-                helper = rabbitMQHelper();
-                JSON.stringify(helper.options).should.equal(JSON.stringify({}));
-                done();
+        describe('with no "config"', function () {
+            it('should throw an error', function (done) {
+                try {
+                    rabbitMQHelper();
+                }
+                catch (err) {
+                    done();
+                }
             });
         });
-        describe('with only config', function () {
+        describe('with a proper "config"', function () {
             it('should be successful', function (done) {
-                helper = rabbitMQHelper(config);
-                JSON.stringify(helper.options).should.equal(JSON.stringify(config));
-                done();
-            });
-        });
-        describe('with config and a logger', function () {
-            it('should be successful', function (done) {
-                helper = rabbitMQHelper(config, console);
-                JSON.stringify(helper.options).should.equal(JSON.stringify(config));
+                var test = rabbitMQHelper(generateConfig(true));
+                JSON.stringify(test.options).should.equal(JSON.stringify(generateConfig(true)));
                 done();
             });
         });
@@ -74,6 +77,8 @@ describe('RabbitMQ Helper Tests', function () {
         describe('"ensureRabbitMQ"', function () {
             describe('when RabbitMQ is offline', function () {
                 it('should callback an error', function (done) {
+                    helper = rabbitMQHelper(generateConfig(true));
+                    helper.initializeRabbitMQHelper(helper);
                     stubs.rabbit = sinon.stub(helper, 'rabbit', function () {
                         return {
                             connect: function (callback) {
@@ -90,6 +95,9 @@ describe('RabbitMQ Helper Tests', function () {
             describe('when RabbitMQ is online', function () {
                 describe('and only used as a publisher [no processor passed]', function () {
                     it('should not callback an connection_error', function (done) {
+                        var config = generateConfig();
+                        helper = rabbitMQHelper(generateConfig(true));
+                        helper.initializeRabbitMQHelper(helper);
                         stubs.rabbit = sinon.stub(helper, 'rabbit', function () {
                             return {
                                 connect: function (callback) {
@@ -98,13 +106,13 @@ describe('RabbitMQ Helper Tests', function () {
                                         },
                                         exchange: function (name, options, callback) {
                                             var exchange = {};
-                                            callback(null);
+                                            callback();
                                             return exchange;
                                         },
                                         queue: function (name, options, callback) {
                                             var queue = {
                                                 bindQueue: function (exchange, routingKey, callback) {
-                                                    callback(null);
+                                                    callback();
                                                 },
                                                 listen: function (options, callback) {
                                                     var ack = function () {
@@ -114,11 +122,11 @@ describe('RabbitMQ Helper Tests', function () {
                                                     });
                                                 }
                                             };
-                                            callback(null);
+                                            callback();
                                             return queue;
                                         }
                                     };
-                                    callback(null);
+                                    callback();
                                     return connect;
                                 }
                             };
@@ -131,6 +139,9 @@ describe('RabbitMQ Helper Tests', function () {
                 });
                 describe('and only as a subscriber or publisher [processor passed]', function () {
                     it('should not callback an connection_error', function (done) {
+                        var config = generateConfig();
+                        helper = rabbitMQHelper(generateConfig(true));
+                        helper.initializeRabbitMQHelper(helper);
                         stubs.rabbit = sinon.stub(helper, 'rabbit', function () {
                             return {
                                 connect: function (callback) {
@@ -139,13 +150,13 @@ describe('RabbitMQ Helper Tests', function () {
                                         },
                                         exchange: function (name, options, callback) {
                                             var exchange = {};
-                                            callback(null);
+                                            callback();
                                             return exchange;
                                         },
                                         queue: function (name, options, callback) {
                                             var queue = {
                                                 bindQueue: function (exchange, routingKey, callback) {
-                                                    callback(null);
+                                                    callback();
                                                 },
                                                 listen: function (options, callback) {
                                                     var ack = function () {
@@ -155,11 +166,11 @@ describe('RabbitMQ Helper Tests', function () {
                                                     });
                                                 }
                                             };
-                                            callback(null);
+                                            callback();
                                             return queue;
                                         }
                                     };
-                                    callback(null);
+                                    callback();
                                     return connect;
                                 }
                             };
@@ -179,6 +190,9 @@ describe('RabbitMQ Helper Tests', function () {
     describe('Connection Events', function () {
         describe('connection [ready]', function () {
             it('should fire when connected', function (done) {
+                var config = generateConfig();
+                helper = rabbitMQHelper(generateConfig(true));
+                helper.initializeRabbitMQHelper(helper);
                 stubs.rabbit = sinon.stub(helper, 'rabbit', function () {
                     return {
                         connect: function (callback) {
@@ -192,13 +206,13 @@ describe('RabbitMQ Helper Tests', function () {
                                 },
                                 exchange: function (name, options, callback) {
                                     var exchange = {};
-                                    callback(null);
+                                    callback();
                                     return exchange;
                                 },
                                 queue: function (name, options, callback) {
                                     var queue = {
                                         bindQueue: function (exchange, routingKey, callback) {
-                                            callback(null);
+                                            callback();
                                         },
                                         listen: function (options, callback) {
                                             var ack = function () {
@@ -208,11 +222,11 @@ describe('RabbitMQ Helper Tests', function () {
                                             });
                                         }
                                     };
-                                    callback(null);
+                                    callback();
                                     return queue;
                                 }
                             };
-                            callback(null);
+                            callback();
                             return connect;
                         }
                     };
@@ -225,6 +239,9 @@ describe('RabbitMQ Helper Tests', function () {
         });
         describe('connection [error]', function () {
             it('should fire if a connection has an error', function (done) {
+                var config = generateConfig();
+                helper = rabbitMQHelper(generateConfig(true));
+                helper.initializeRabbitMQHelper(helper);
                 stubs.rabbit = sinon.stub(helper, 'rabbit', function () {
                     return {
                         connect: function () {
@@ -268,6 +285,8 @@ describe('RabbitMQ Helper Tests', function () {
         describe('connection [ready]', function () {
             it('should fire when connected', function (done) {
                 var called = false;
+                helper = rabbitMQHelper(generateConfig(true));
+                helper.initializeRabbitMQHelper(helper);
                 stubs.rabbit = sinon.stub(helper, 'rabbit', function () {
                     return {
                         connect: function () {
@@ -288,7 +307,7 @@ describe('RabbitMQ Helper Tests', function () {
                                         bindQueue: function (exchange, routingKey, callback) {
                                             if (!called) {
                                                 called = true;
-                                                callback(null);
+                                                callback();
                                             }
                                         }
                                     };
@@ -308,6 +327,8 @@ describe('RabbitMQ Helper Tests', function () {
     });
     describe('Exchange Creation Errors', function () {
         it('should callback an error', function (done) {
+            helper = rabbitMQHelper(generateConfig(true));
+            helper.initializeRabbitMQHelper(helper);
             stubs.rabbit = sinon.stub(helper, 'rabbit', function () {
                 return {
                     connect: function (callback) {
@@ -318,7 +339,7 @@ describe('RabbitMQ Helper Tests', function () {
                                 callback('error');
                             }
                         };
-                        callback(null);
+                        callback();
                         return connect;
                     }
                 };
@@ -334,6 +355,8 @@ describe('RabbitMQ Helper Tests', function () {
     });
     describe('Queue Creation Errors', function () {
         it('should callback an error', function (done) {
+            helper = rabbitMQHelper(generateConfig(true));
+            helper.initializeRabbitMQHelper(helper);
             stubs.rabbit = sinon.stub(helper, 'rabbit', function () {
                 return {
                     connect: function (callback) {
@@ -342,14 +365,14 @@ describe('RabbitMQ Helper Tests', function () {
                             },
                             exchange: function (name, options, callback) {
                                 var exchange = {};
-                                callback(null);
+                                callback();
                                 return exchange;
                             },
                             queue: function (name, routingKey, callback) {
                                 callback('error');
                             }
                         };
-                        callback(null);
+                        callback();
                         return connect;
                     }
                 };
@@ -367,6 +390,9 @@ describe('RabbitMQ Helper Tests', function () {
         describe('when picking up a message from the queue', function () {
             describe('and the processor function is successful', function () {
                 it('should not callback an error', function (done) {
+                    var config = generateConfig();
+                    helper = rabbitMQHelper(generateConfig(true));
+                    helper.initializeRabbitMQHelper(helper);
                     stubs.rabbit = sinon.stub(helper, 'rabbit', function () {
                         return {
                             connect: function (callback) {
@@ -375,13 +401,13 @@ describe('RabbitMQ Helper Tests', function () {
                                     },
                                     exchange: function (name, options, callback) {
                                         var exchange = {};
-                                        callback(null);
+                                        callback();
                                         return exchange;
                                     },
                                     queue: function (name, options, callback) {
                                         var queue = {
                                             bindQueue: function (exchange, routingKey, callback) {
-                                                callback(null);
+                                                callback();
                                             },
                                             listen: function (options, callback) {
                                                 var ack = function () {
@@ -391,11 +417,11 @@ describe('RabbitMQ Helper Tests', function () {
                                                 });
                                             }
                                         };
-                                        callback(null);
+                                        callback();
                                         return queue;
                                     }
                                 };
-                                callback(null);
+                                callback();
                                 return connect;
                             }
                         };
@@ -411,6 +437,9 @@ describe('RabbitMQ Helper Tests', function () {
             });
             describe('and the processor function is not successful', function () {
                 it('should callback an error', function (done) {
+                    var config = generateConfig();
+                    helper = rabbitMQHelper(generateConfig(true));
+                    helper.initializeRabbitMQHelper(helper);
                     stubs.rabbit = sinon.stub(helper, 'rabbit', function () {
                         return {
                             connect: function (callback) {
@@ -419,13 +448,13 @@ describe('RabbitMQ Helper Tests', function () {
                                     },
                                     exchange: function (name, options, callback) {
                                         var exchange = {};
-                                        callback(null);
+                                        callback();
                                         return exchange;
                                     },
                                     queue: function (name, options, callback) {
                                         var queue = {
                                             bindQueue: function (exchange, routingKey, callback) {
-                                                callback(null);
+                                                callback();
                                             },
                                             listen: function (options, callback) {
                                                 var ack = function () {
@@ -435,11 +464,11 @@ describe('RabbitMQ Helper Tests', function () {
                                                 });
                                             }
                                         };
-                                        callback(null);
+                                        callback();
                                         return queue;
                                     }
                                 };
-                                callback(null);
+                                callback();
                                 return connect;
                             }
                         };
@@ -459,6 +488,8 @@ describe('RabbitMQ Helper Tests', function () {
         describe('when the helper is ensured', function () {
             describe('and options are not passed', function () {
                 it('should publish the message', function (done) {
+                    helper = rabbitMQHelper(generateConfig(true));
+                    helper.initializeRabbitMQHelper(helper);
                     stubs.rabbit = sinon.stub(helper, 'rabbit', function () {
                         return {
                             connect: function (callback) {
@@ -471,20 +502,20 @@ describe('RabbitMQ Helper Tests', function () {
                                                 callback(null, true);
                                             }
                                         };
-                                        callback(null);
+                                        callback();
                                         return exchange;
                                     },
                                     queue: function (name, options, callback) {
                                         var queue = {
                                             bindQueue: function (exchange, routingKey, callback) {
-                                                callback(null);
+                                                callback();
                                             }
                                         };
-                                        callback(null);
+                                        callback();
                                         return queue;
                                     }
                                 };
-                                callback(null);
+                                callback();
                                 return connect;
                             }
                         };
@@ -501,6 +532,8 @@ describe('RabbitMQ Helper Tests', function () {
             });
             describe('and publishing succeeds', function () {
                 it('should publish the message', function (done) {
+                    helper = rabbitMQHelper(generateConfig(true));
+                    helper.initializeRabbitMQHelper(helper);
                     stubs.rabbit = sinon.stub(helper, 'rabbit', function () {
                         return {
                             connect: function (callback) {
@@ -513,20 +546,20 @@ describe('RabbitMQ Helper Tests', function () {
                                                 callback(null, true);
                                             }
                                         };
-                                        callback(null);
+                                        callback();
                                         return exchange;
                                     },
                                     queue: function (name, options, callback) {
                                         var queue = {
                                             bindQueue: function (exchange, routingKey, callback) {
-                                                callback(null);
+                                                callback();
                                             }
                                         };
-                                        callback(null);
+                                        callback();
                                         return queue;
                                     }
                                 };
-                                callback(null);
+                                callback();
                                 return connect;
                             }
                         };
@@ -543,6 +576,8 @@ describe('RabbitMQ Helper Tests', function () {
             });
             describe('and publishing fails', function () {
                 it('should not publish the message', function (done) {
+                    helper = rabbitMQHelper(generateConfig(true));
+                    helper.initializeRabbitMQHelper(helper);
                     stubs.rabbit = sinon.stub(helper, 'rabbit', function () {
                         return {
                             connect: function (callback) {
@@ -555,20 +590,20 @@ describe('RabbitMQ Helper Tests', function () {
                                                 callback('error', false);
                                             }
                                         };
-                                        callback(null);
+                                        callback();
                                         return exchange;
                                     },
                                     queue: function (name, options, callback) {
                                         var queue = {
                                             bindQueue: function (exchange, routingKey, callback) {
-                                                callback(null);
+                                                callback();
                                             }
                                         };
-                                        callback(null);
+                                        callback();
                                         return queue;
                                     }
                                 };
-                                callback(null);
+                                callback();
                                 return connect;
                             }
                         };
@@ -586,7 +621,8 @@ describe('RabbitMQ Helper Tests', function () {
         });
         describe('when the helper is not ensured', function () {
             it('should callback an error', function (done) {
-                rabbitMQHelper().publishMessage({}, {}, function (err) {
+                helper = rabbitMQHelper(generateConfig(true));
+                helper.publishMessage({}, function (err) {
                     should.exist(err);
                     done();
                 });
