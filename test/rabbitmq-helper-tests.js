@@ -175,12 +175,10 @@ describe('RabbitMQ Helper Tests', function () {
                                 }
                             };
                         });
-                        var processor = function (message, callback) {
-                            callback(null, message);
-                        };
-                        helper.ensureRabbitMQ(processor, function (err) {
-                            should.not.exist(err);
+                        var processor = function () {
                             done();
+                        };
+                        helper.ensureRabbitMQ(processor, function () {
                         });
                     });
                 });
@@ -387,99 +385,230 @@ describe('RabbitMQ Helper Tests', function () {
         });
     });
     describe('Subscriber Processing', function () {
-        describe('when picking up a message from the queue', function () {
-            describe('and the processor function is successful', function () {
-                it('should not callback an error', function (done) {
-                    var config = generateConfig();
-                    helper = rabbitMQHelper(generateConfig(true));
-                    helper.initializeRabbitMQHelper(helper);
-                    stubs.rabbit = sinon.stub(helper, 'rabbit', function () {
-                        return {
-                            connect: function (callback) {
-                                var connect = {
-                                    on: function () {
-                                    },
-                                    exchange: function (name, options, callback) {
-                                        var exchange = {};
-                                        callback();
-                                        return exchange;
-                                    },
-                                    queue: function (name, options, callback) {
-                                        var queue = {
-                                            bindQueue: function (exchange, routingKey, callback) {
-                                                callback();
-                                            },
-                                            listen: function (options, callback) {
-                                                var ack = function () {
-                                                };
-                                                callback({}, ack, {}, {
-                                                    routingKey: config.queue.options.routingKey
-                                                });
-                                            }
-                                        };
-                                        callback();
-                                        return queue;
-                                    }
-                                };
-                                callback();
-                                return connect;
-                            }
-                        };
-                    });
-                    var processor = function (message, callback) {
-                        callback(null, message);
+        describe('when picking up a queue item', function () {
+            it('should have a "message" object', function (done) {
+                var config = generateConfig();
+                helper = rabbitMQHelper(generateConfig(true));
+                helper.initializeRabbitMQHelper(helper);
+                stubs.rabbit = sinon.stub(helper, 'rabbit', function () {
+                    return {
+                        connect: function (callback) {
+                            var connect = {
+                                on: function () {
+                                },
+                                exchange: function (name, options, callback) {
+                                    var exchange = {};
+                                    callback();
+                                    return exchange;
+                                },
+                                queue: function (name, options, callback) {
+                                    var queue = {
+                                        bindQueue: function (exchange, routingKey, callback) {
+                                            callback();
+                                        },
+                                        listen: function (options, callback) {
+                                            var ack = function () {
+                                            };
+                                            callback({}, ack, {}, {
+                                                routingKey: config.queue.options.routingKey
+                                            }, {});
+                                        }
+                                    };
+                                    callback();
+                                    return queue;
+                                }
+                            };
+                            callback();
+                            return connect;
+                        }
                     };
-                    helper.ensureRabbitMQ(processor, function (err) {
-                        should.not.exist(err);
-                        done();
-                    });
+                });
+                var processor = function (queue_item) {
+                    should.exist(queue_item.message);
+                    (queue_item.message.constructor === {}.constructor).should.equal(true);
+                    done();
+                };
+                helper.ensureRabbitMQ(processor, function () {
                 });
             });
-            describe('and the processor function is not successful', function () {
-                it('should callback an error', function (done) {
-                    var config = generateConfig();
-                    helper = rabbitMQHelper(generateConfig(true));
-                    helper.initializeRabbitMQHelper(helper);
-                    stubs.rabbit = sinon.stub(helper, 'rabbit', function () {
-                        return {
-                            connect: function (callback) {
-                                var connect = {
-                                    on: function () {
-                                    },
-                                    exchange: function (name, options, callback) {
-                                        var exchange = {};
-                                        callback();
-                                        return exchange;
-                                    },
-                                    queue: function (name, options, callback) {
-                                        var queue = {
-                                            bindQueue: function (exchange, routingKey, callback) {
-                                                callback();
-                                            },
-                                            listen: function (options, callback) {
-                                                var ack = function () {
-                                                };
-                                                callback({}, ack, {}, {
-                                                    routingKey: config.queue.options.routingKey
-                                                });
-                                            }
-                                        };
-                                        callback();
-                                        return queue;
-                                    }
-                                };
-                                callback();
-                                return connect;
-                            }
-                        };
-                    });
-                    var processor = function (message, callback) {
-                        callback('error');
+            it('should have a "ack" function', function (done) {
+                var config = generateConfig();
+                helper = rabbitMQHelper(generateConfig(true));
+                helper.initializeRabbitMQHelper(helper);
+                stubs.rabbit = sinon.stub(helper, 'rabbit', function () {
+                    return {
+                        connect: function (callback) {
+                            var connect = {
+                                on: function () {
+                                },
+                                exchange: function (name, options, callback) {
+                                    var exchange = {};
+                                    callback();
+                                    return exchange;
+                                },
+                                queue: function (name, options, callback) {
+                                    var queue = {
+                                        bindQueue: function (exchange, routingKey, callback) {
+                                            callback();
+                                        },
+                                        listen: function (options, callback) {
+                                            var ack = function () {
+                                            };
+                                            callback({}, ack, {}, {
+                                                routingKey: config.queue.options.routingKey
+                                            }, {});
+                                        }
+                                    };
+                                    callback();
+                                    return queue;
+                                }
+                            };
+                            callback();
+                            return connect;
+                        }
                     };
-                    helper.ensureRabbitMQ(processor, function (err) {
-                        should.exist(err);
-                        done();
-                    });
+                });
+                var processor = function (queue_item) {
+                    should.exist(queue_item.ack);
+                    ('function' === typeof queue_item.ack).should.equal(true);
+                    done();
+                };
+                helper.ensureRabbitMQ(processor, function () {
+                });
+            });
+            it('should have a "headers" object', function (done) {
+                var config = generateConfig();
+                helper = rabbitMQHelper(generateConfig(true));
+                helper.initializeRabbitMQHelper(helper);
+                stubs.rabbit = sinon.stub(helper, 'rabbit', function () {
+                    return {
+                        connect: function (callback) {
+                            var connect = {
+                                on: function () {
+                                },
+                                exchange: function (name, options, callback) {
+                                    var exchange = {};
+                                    callback();
+                                    return exchange;
+                                },
+                                queue: function (name, options, callback) {
+                                    var queue = {
+                                        bindQueue: function (exchange, routingKey, callback) {
+                                            callback();
+                                        },
+                                        listen: function (options, callback) {
+                                            var ack = function () {
+                                            };
+                                            callback({}, ack, {}, {
+                                                routingKey: config.queue.options.routingKey
+                                            }, {});
+                                        }
+                                    };
+                                    callback();
+                                    return queue;
+                                }
+                            };
+                            callback();
+                            return connect;
+                        }
+                    };
+                });
+                var processor = function (queue_item) {
+                    should.exist(queue_item.headers);
+                    (queue_item.headers.constructor === {}.constructor).should.equal(true);
+                    done();
+                };
+                helper.ensureRabbitMQ(processor, function () {
+                });
+            });
+            it('should have a "fields" object', function (done) {
+                var config = generateConfig();
+                helper = rabbitMQHelper(generateConfig(true));
+                helper.initializeRabbitMQHelper(helper);
+                stubs.rabbit = sinon.stub(helper, 'rabbit', function () {
+                    return {
+                        connect: function (callback) {
+                            var connect = {
+                                on: function () {
+                                },
+                                exchange: function (name, options, callback) {
+                                    var exchange = {};
+                                    callback();
+                                    return exchange;
+                                },
+                                queue: function (name, options, callback) {
+                                    var queue = {
+                                        bindQueue: function (exchange, routingKey, callback) {
+                                            callback();
+                                        },
+                                        listen: function (options, callback) {
+                                            var ack = function () {
+                                            };
+                                            callback({}, ack, {}, {
+                                                routingKey: config.queue.options.routingKey
+                                            }, {});
+                                        }
+                                    };
+                                    callback();
+                                    return queue;
+                                }
+                            };
+                            callback();
+                            return connect;
+                        }
+                    };
+                });
+                var processor = function (queue_item) {
+                    should.exist(queue_item.fields);
+                    (queue_item.fields.constructor === {}.constructor).should.equal(true);
+                    done();
+                };
+                helper.ensureRabbitMQ(processor, function () {
+                });
+            });
+            it('should have a "m" object', function (done) {
+                var config = generateConfig();
+                helper = rabbitMQHelper(generateConfig(true));
+                helper.initializeRabbitMQHelper(helper);
+                stubs.rabbit = sinon.stub(helper, 'rabbit', function () {
+                    return {
+                        connect: function (callback) {
+                            var connect = {
+                                on: function () {
+                                },
+                                exchange: function (name, options, callback) {
+                                    var exchange = {};
+                                    callback();
+                                    return exchange;
+                                },
+                                queue: function (name, options, callback) {
+                                    var queue = {
+                                        bindQueue: function (exchange, routingKey, callback) {
+                                            callback();
+                                        },
+                                        listen: function (options, callback) {
+                                            var ack = function () {
+                                            };
+                                            callback({}, ack, {}, {
+                                                routingKey: config.queue.options.routingKey
+                                            }, {});
+                                        }
+                                    };
+                                    callback();
+                                    return queue;
+                                }
+                            };
+                            callback();
+                            return connect;
+                        }
+                    };
+                });
+                var processor = function (queue_item) {
+                    should.exist(queue_item.m);
+                    (queue_item.m.constructor === {}.constructor).should.equal(true);
+                    done();
+                };
+                helper.ensureRabbitMQ(processor, function () {
                 });
             });
         });
