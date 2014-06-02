@@ -8,7 +8,6 @@ npm i git://github.com/icehunter/rabbitmq-helper -S
 ```
 
 ### Config:
-
 ```javascript
 var config = {
     connection: {
@@ -37,13 +36,11 @@ var config = {
 };
 ```
 ### Config Notes:
-
 Based on joi validation all fields are required that you see above. You can change this at anytime here:
 
 https://github.com/Icehunter/rabbitmq-helper/blob/master/lib/validators/config.js
 
 ### Usage:
-
 ```javascript
 // setup helper class
 var rabbitMQHelper = require('rabbitmq-helper');
