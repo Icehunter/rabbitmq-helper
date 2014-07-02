@@ -2,6 +2,12 @@
 ***
 * 
 
+### 1.0.0
+***
+* Refactored instantiation and event model.
+* Event's supported: initialized, reconnected, error, queue-listening
+* Updated unit tests.
+
 ### 0.2.2
 ***
 * EnsureRabbitMQ will not double-initialize the module.
