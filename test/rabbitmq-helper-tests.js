@@ -10,13 +10,14 @@ function generateConfig(mocked) {
         connection: {
             host: '127.0.0.1',
             options: {
+                heartbeat: 5,
                 reconnect: true
             }
         },
         exchange: {
             name: 'testing-exchange',
             options: {
-                type: 'fanout',
+                type: 'direct',
                 durable: false,
                 autoDelete: false
             }
@@ -24,7 +25,7 @@ function generateConfig(mocked) {
         queue: {
             name: 'testing-queue',
             options: {
-                routingKey: 'all-routing',
+                routingKey: 'event-routing',
                 durable: true,
                 autoDelete: false,
                 prefetchCount: 1
@@ -182,6 +183,54 @@ describe('RabbitMQ Helper Tests', function () {
                         });
                     });
                 });
+                describe('and was already initilized the first time', function () {
+                    it('should callback without initializing', function (done) {
+                        var config = generateConfig();
+                        helper = rabbitMQHelper(generateConfig(true));
+                        helper.initializeRabbitMQHelper(helper);
+                        stubs.rabbit = sinon.stub(helper, 'rabbit', function () {
+                            return {
+                                connect: function (callback) {
+                                    var connect = {
+                                        on: function () {
+                                        },
+                                        exchange: function (name, options, callback) {
+                                            var exchange = {};
+                                            callback();
+                                            return exchange;
+                                        },
+                                        queue: function (name, options, callback) {
+                                            var queue = {
+                                                bindQueue: function (exchange, routingKey, callback) {
+                                                    callback();
+                                                },
+                                                listen: function (options, callback) {
+                                                    var ack = function () {
+                                                    };
+                                                    callback({}, ack, {}, {
+                                                        routingKey: config.queue.options.routingKey
+                                                    });
+                                                }
+                                            };
+                                            callback();
+                                            return queue;
+                                        }
+                                    };
+                                    callback();
+                                    return connect;
+                                }
+                            };
+                        });
+                        var processor = function () {
+                            done();
+                        };
+                        helper.ensureRabbitMQ(processor, function () {
+                        });
+                        // second ensure
+                        helper.ensureRabbitMQ(processor, function () {
+                        });
+                    });
+                });
             });
         });
     });
@@ -235,8 +284,8 @@ describe('RabbitMQ Helper Tests', function () {
                 });
             });
         });
-        describe('connection [error]', function () {
-            it('should fire if a connection has an error', function (done) {
+        describe('connection [connection error]', function () {
+            it('should fire if a connection has a connection error', function (done) {
                 var config = generateConfig();
                 helper = rabbitMQHelper(generateConfig(true));
                 helper.initializeRabbitMQHelper(helper);
@@ -246,7 +295,7 @@ describe('RabbitMQ Helper Tests', function () {
                             var connect = {
                                 on: function (event, callback) {
                                     switch (event) {
-                                        case 'error':
+                                        case 'connection error':
                                             callback('error');
                                             break;
                                     }
