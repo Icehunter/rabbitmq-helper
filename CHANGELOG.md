@@ -2,6 +2,10 @@
 ***
 * 
 
+### 0.2.2
+***
+* EnsureRabbitMQ will not double-initialize the module.
+
 ### 0.2.1
 ***
 * Removed processor callback as it's not needed from the ensureRabbitMQ callback.
