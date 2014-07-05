@@ -1,3 +1,5 @@
+/* global describe, it, beforeEach */
+
 'use strict';
 
 process.env.NODE_ENV = 'test';
@@ -76,12 +78,9 @@ describe('RabbitMQ Helper Tests', function () {
         describe('with a proper "config" and event handlers', function () {
             it('should be successful', function (done) {
                 var test = rabbitMQHelper(generateConfig(true), {
-                    initialized: function () {
-                    },
-                    reconnected: function () {
-                    },
-                    error: function () {
-                    }
+                    initialized: function () {},
+                    reconnected: function () {},
+                    error: function () {}
                 });
                 JSON.stringify(test.options).should.equal(JSON.stringify(generateConfig(true)));
                 done();
@@ -95,15 +94,11 @@ describe('RabbitMQ Helper Tests', function () {
                     var myHelper;
                     var eventHandlers = {
                         initialized: function () {
-                            myHelper.setQueueHandler(function () {
-                            });
+                            myHelper.setQueueHandler(function () {});
                         },
-                        reconnected: function () {
-                        },
-                        error: function () {
-                        },
-                        'queue-listening': function () {
-                        }
+                        reconnected: function () {},
+                        error: function () {},
+                        'queue-listening': function () {}
                     };
                     var initializedSpy = sinon.spy(eventHandlers, 'initialized');
                     var reconnectedSpy = sinon.spy(eventHandlers, 'reconnected');
@@ -114,11 +109,9 @@ describe('RabbitMQ Helper Tests', function () {
                         return {
                             connect: function (callback) {
                                 var connect = {
-                                    on: function () {
-                                    },
+                                    on: function () {},
                                     exchange: function (name, options, callback) {
-                                        var exchange = {
-                                        };
+                                        var exchange = {};
                                         callback();
                                         return exchange;
                                     },
@@ -127,8 +120,7 @@ describe('RabbitMQ Helper Tests', function () {
                                             bindQueue: function (name, options, callback) {
                                                 callback();
                                             },
-                                            listen: function () {
-                                            }
+                                            listen: function () {}
                                         };
                                         return queue;
                                     }
@@ -151,16 +143,12 @@ describe('RabbitMQ Helper Tests', function () {
                     var myHelper;
                     var eventHandlers = {
                         initialized: function () {
-                            myHelper.setQueueHandler(function () {
-                            });
+                            myHelper.setQueueHandler(function () {});
                         },
-                        reconnected: function () {
-                        },
-                        error: function () {
-                        },
+                        reconnected: function () {},
+                        error: function () {},
                         'queue-listening': function () {
-                            myHelper.setQueueHandler(function () {
-                            });
+                            myHelper.setQueueHandler(function () {});
                         }
                     };
                     var initializedSpy = sinon.spy(eventHandlers, 'initialized');
@@ -172,11 +160,9 @@ describe('RabbitMQ Helper Tests', function () {
                         return {
                             connect: function (callback) {
                                 var connect = {
-                                    on: function () {
-                                    },
+                                    on: function () {},
                                     exchange: function (name, options, callback) {
-                                        var exchange = {
-                                        };
+                                        var exchange = {};
                                         callback();
                                         return exchange;
                                     },
@@ -185,8 +171,7 @@ describe('RabbitMQ Helper Tests', function () {
                                             bindQueue: function (name, options, callback) {
                                                 callback();
                                             },
-                                            listen: function () {
-                                            }
+                                            listen: function () {}
                                         };
                                         return queue;
                                     }
@@ -211,12 +196,9 @@ describe('RabbitMQ Helper Tests', function () {
             it('should fire the "initialized" when fully initialized', function (done) {
                 var config = generateConfig(true);
                 var eventHandlers = {
-                    initialized: function () {
-                    },
-                    reconnected: function () {
-                    },
-                    error: function () {
-                    }
+                    initialized: function () {},
+                    reconnected: function () {},
+                    error: function () {}
                 };
                 var initializedSpy = sinon.spy(eventHandlers, 'initialized');
                 var reconnectedSpy = sinon.spy(eventHandlers, 'reconnected');
@@ -226,11 +208,9 @@ describe('RabbitMQ Helper Tests', function () {
                     return {
                         connect: function (callback) {
                             var connect = {
-                                on: function () {
-                                },
+                                on: function () {},
                                 exchange: function (name, options, callback) {
-                                    var exchange = {
-                                    };
+                                    var exchange = {};
                                     callback();
                                     return exchange;
                                 },
@@ -240,8 +220,7 @@ describe('RabbitMQ Helper Tests', function () {
                                             callback();
                                         },
                                         listen: function (options, callback) {
-                                            var ack = function () {
-                                            };
+                                            var ack = function () {};
                                             callback({}, ack, {}, {
                                                 routingKey: config.queue.options.routingKey
                                             });
@@ -267,12 +246,9 @@ describe('RabbitMQ Helper Tests', function () {
                 var called = false;
                 var config = generateConfig(true);
                 var eventHandlers = {
-                    initialized: function () {
-                    },
-                    reconnected: function () {
-                    },
-                    error: function () {
-                    }
+                    initialized: function () {},
+                    reconnected: function () {},
+                    error: function () {}
                 };
                 var initializedSpy = sinon.spy(eventHandlers, 'initialized');
                 var reconnectedSpy = sinon.spy(eventHandlers, 'reconnected');
@@ -284,17 +260,16 @@ describe('RabbitMQ Helper Tests', function () {
                             var connect = {
                                 on: function (event, callback) {
                                     switch (event) {
-                                        case 'connection error':
-                                            callback(new Error('Unexpected close'));
-                                            break;
-                                        case 'reconnected':
-                                            callback();
-                                            break;
+                                    case 'connection error':
+                                        callback(new Error('Unexpected close'));
+                                        break;
+                                    case 'reconnected':
+                                        callback();
+                                        break;
                                     }
                                 },
                                 exchange: function (name, options, callback) {
-                                    var exchange = {
-                                    };
+                                    var exchange = {};
                                     callback();
                                     return exchange;
                                 },
@@ -307,8 +282,7 @@ describe('RabbitMQ Helper Tests', function () {
                                             }
                                         },
                                         listen: function (options, callback) {
-                                            var ack = function () {
-                                            };
+                                            var ack = function () {};
                                             callback({}, ack, {}, {
                                                 routingKey: config.queue.options.routingKey
                                             });
@@ -333,12 +307,9 @@ describe('RabbitMQ Helper Tests', function () {
             describe('and it\'s a "connect error"', function () {
                 it('should fire the "error" event once', function (done) {
                     var eventHandlers = {
-                        initialized: function () {
-                        },
-                        reconnected: function () {
-                        },
-                        error: function () {
-                        }
+                        initialized: function () {},
+                        reconnected: function () {},
+                        error: function () {}
                     };
                     var initializedSpy = sinon.spy(eventHandlers, 'initialized');
                     var reconnectedSpy = sinon.spy(eventHandlers, 'reconnected');
@@ -364,12 +335,9 @@ describe('RabbitMQ Helper Tests', function () {
                     var called = false;
                     var config = generateConfig(true);
                     var eventHandlers = {
-                        initialized: function () {
-                        },
-                        reconnected: function () {
-                        },
-                        error: function () {
-                        }
+                        initialized: function () {},
+                        reconnected: function () {},
+                        error: function () {}
                     };
                     var initializedSpy = sinon.spy(eventHandlers, 'initialized');
                     var reconnectedSpy = sinon.spy(eventHandlers, 'reconnected');
@@ -381,14 +349,13 @@ describe('RabbitMQ Helper Tests', function () {
                                 var connect = {
                                     on: function (event, callback) {
                                         switch (event) {
-                                            case 'connection error':
-                                                callback('error');
-                                                break;
+                                        case 'connection error':
+                                            callback('error');
+                                            break;
                                         }
                                     },
                                     exchange: function (name, options, callback) {
-                                        var exchange = {
-                                        };
+                                        var exchange = {};
                                         callback();
                                         return exchange;
                                     },
@@ -401,8 +368,7 @@ describe('RabbitMQ Helper Tests', function () {
                                                 }
                                             },
                                             listen: function (options, callback) {
-                                                var ack = function () {
-                                                };
+                                                var ack = function () {};
                                                 callback({}, ack, {}, {
                                                     routingKey: config.queue.options.routingKey
                                                 });
@@ -428,12 +394,9 @@ describe('RabbitMQ Helper Tests', function () {
                     var called = false;
                     var config = generateConfig(true);
                     var eventHandlers = {
-                        initialized: function () {
-                        },
-                        reconnected: function () {
-                        },
-                        error: function () {
-                        }
+                        initialized: function () {},
+                        reconnected: function () {},
+                        error: function () {}
                     };
                     var initializedSpy = sinon.spy(eventHandlers, 'initialized');
                     var reconnectedSpy = sinon.spy(eventHandlers, 'reconnected');
@@ -443,8 +406,7 @@ describe('RabbitMQ Helper Tests', function () {
                         return {
                             connect: function (callback) {
                                 var connect = {
-                                    on: function () {
-                                    },
+                                    on: function () {},
                                     exchange: function (name, options, callback) {
                                         callback('error');
                                         return null;
@@ -458,8 +420,7 @@ describe('RabbitMQ Helper Tests', function () {
                                                 }
                                             },
                                             listen: function (options, callback) {
-                                                var ack = function () {
-                                                };
+                                                var ack = function () {};
                                                 callback({}, ack, {}, {
                                                     routingKey: config.queue.options.routingKey
                                                 });
@@ -483,12 +444,9 @@ describe('RabbitMQ Helper Tests', function () {
             describe('and it\'s a "queue error"', function () {
                 it('should fire the "error" event once', function (done) {
                     var eventHandlers = {
-                        initialized: function () {
-                        },
-                        reconnected: function () {
-                        },
-                        error: function () {
-                        }
+                        initialized: function () {},
+                        reconnected: function () {},
+                        error: function () {}
                     };
                     var initializedSpy = sinon.spy(eventHandlers, 'initialized');
                     var reconnectedSpy = sinon.spy(eventHandlers, 'reconnected');
@@ -498,11 +456,9 @@ describe('RabbitMQ Helper Tests', function () {
                         return {
                             connect: function (callback) {
                                 var connect = {
-                                    on: function () {
-                                    },
+                                    on: function () {},
                                     exchange: function (name, options, callback) {
-                                        var exchange = {
-                                        };
+                                        var exchange = {};
                                         callback();
                                         return exchange;
                                     },
@@ -538,12 +494,9 @@ describe('RabbitMQ Helper Tests', function () {
                             done();
                         });
                     },
-                    reconnected: function () {
-                    },
-                    error: function () {
-                    },
-                    'queue-listening': function () {
-                    }
+                    reconnected: function () {},
+                    error: function () {},
+                    'queue-listening': function () {}
                 };
                 var initializedSpy = sinon.spy(eventHandlers, 'initialized');
                 var reconnectedSpy = sinon.spy(eventHandlers, 'reconnected');
@@ -554,11 +507,9 @@ describe('RabbitMQ Helper Tests', function () {
                     return {
                         connect: function (callback) {
                             var connect = {
-                                on: function () {
-                                },
+                                on: function () {},
                                 exchange: function (name, options, callback) {
-                                    var exchange = {
-                                    };
+                                    var exchange = {};
                                     callback();
                                     return exchange;
                                 },
@@ -568,8 +519,7 @@ describe('RabbitMQ Helper Tests', function () {
                                             callback();
                                         },
                                         listen: function (options, callback) {
-                                            var ack = function () {
-                                            };
+                                            var ack = function () {};
                                             callback({}, ack, {}, {
                                                 routingKey: config.queue.options.routingKey
                                             }, {});
@@ -600,12 +550,9 @@ describe('RabbitMQ Helper Tests', function () {
                             done();
                         });
                     },
-                    reconnected: function () {
-                    },
-                    error: function () {
-                    },
-                    'queue-listening': function () {
-                    }
+                    reconnected: function () {},
+                    error: function () {},
+                    'queue-listening': function () {}
                 };
                 var initializedSpy = sinon.spy(eventHandlers, 'initialized');
                 var reconnectedSpy = sinon.spy(eventHandlers, 'reconnected');
@@ -616,11 +563,9 @@ describe('RabbitMQ Helper Tests', function () {
                     return {
                         connect: function (callback) {
                             var connect = {
-                                on: function () {
-                                },
+                                on: function () {},
                                 exchange: function (name, options, callback) {
-                                    var exchange = {
-                                    };
+                                    var exchange = {};
                                     callback();
                                     return exchange;
                                 },
@@ -630,8 +575,7 @@ describe('RabbitMQ Helper Tests', function () {
                                             callback();
                                         },
                                         listen: function (options, callback) {
-                                            var ack = function () {
-                                            };
+                                            var ack = function () {};
                                             callback({}, ack, {}, {
                                                 routingKey: config.queue.options.routingKey
                                             }, {});
@@ -662,12 +606,9 @@ describe('RabbitMQ Helper Tests', function () {
                             done();
                         });
                     },
-                    reconnected: function () {
-                    },
-                    error: function () {
-                    },
-                    'queue-listening': function () {
-                    }
+                    reconnected: function () {},
+                    error: function () {},
+                    'queue-listening': function () {}
                 };
                 var initializedSpy = sinon.spy(eventHandlers, 'initialized');
                 var reconnectedSpy = sinon.spy(eventHandlers, 'reconnected');
@@ -678,11 +619,9 @@ describe('RabbitMQ Helper Tests', function () {
                     return {
                         connect: function (callback) {
                             var connect = {
-                                on: function () {
-                                },
+                                on: function () {},
                                 exchange: function (name, options, callback) {
-                                    var exchange = {
-                                    };
+                                    var exchange = {};
                                     callback();
                                     return exchange;
                                 },
@@ -692,8 +631,7 @@ describe('RabbitMQ Helper Tests', function () {
                                             callback();
                                         },
                                         listen: function (options, callback) {
-                                            var ack = function () {
-                                            };
+                                            var ack = function () {};
                                             callback({}, ack, {}, {
                                                 routingKey: config.queue.options.routingKey
                                             }, {});
@@ -724,12 +662,9 @@ describe('RabbitMQ Helper Tests', function () {
                             done();
                         });
                     },
-                    reconnected: function () {
-                    },
-                    error: function () {
-                    },
-                    'queue-listening': function () {
-                    }
+                    reconnected: function () {},
+                    error: function () {},
+                    'queue-listening': function () {}
                 };
                 var initializedSpy = sinon.spy(eventHandlers, 'initialized');
                 var reconnectedSpy = sinon.spy(eventHandlers, 'reconnected');
@@ -740,11 +675,9 @@ describe('RabbitMQ Helper Tests', function () {
                     return {
                         connect: function (callback) {
                             var connect = {
-                                on: function () {
-                                },
+                                on: function () {},
                                 exchange: function (name, options, callback) {
-                                    var exchange = {
-                                    };
+                                    var exchange = {};
                                     callback();
                                     return exchange;
                                 },
@@ -754,8 +687,7 @@ describe('RabbitMQ Helper Tests', function () {
                                             callback();
                                         },
                                         listen: function (options, callback) {
-                                            var ack = function () {
-                                            };
+                                            var ack = function () {};
                                             callback({}, ack, {}, {
                                                 routingKey: config.queue.options.routingKey
                                             }, {});
@@ -786,12 +718,9 @@ describe('RabbitMQ Helper Tests', function () {
                             done();
                         });
                     },
-                    reconnected: function () {
-                    },
-                    error: function () {
-                    },
-                    'queue-listening': function () {
-                    }
+                    reconnected: function () {},
+                    error: function () {},
+                    'queue-listening': function () {}
                 };
                 var initializedSpy = sinon.spy(eventHandlers, 'initialized');
                 var reconnectedSpy = sinon.spy(eventHandlers, 'reconnected');
@@ -802,11 +731,9 @@ describe('RabbitMQ Helper Tests', function () {
                     return {
                         connect: function (callback) {
                             var connect = {
-                                on: function () {
-                                },
+                                on: function () {},
                                 exchange: function (name, options, callback) {
-                                    var exchange = {
-                                    };
+                                    var exchange = {};
                                     callback();
                                     return exchange;
                                 },
@@ -816,8 +743,7 @@ describe('RabbitMQ Helper Tests', function () {
                                             callback();
                                         },
                                         listen: function (options, callback) {
-                                            var ack = function () {
-                                            };
+                                            var ack = function () {};
                                             callback({}, ack, {}, {
                                                 routingKey: config.queue.options.routingKey
                                             }, {});
@@ -846,13 +772,10 @@ describe('RabbitMQ Helper Tests', function () {
                     var myHelper;
                     var eventHandlers = {
                         initialized: function () {
-                            myHelper.setQueueHandler(function () {
-                            });
+                            myHelper.setQueueHandler(function () {});
                         },
-                        reconnected: function () {
-                        },
-                        error: function () {
-                        },
+                        reconnected: function () {},
+                        error: function () {},
                         'queue-listening': function () {
                             myHelper.publishMessage({}, function (err, delivered) {
                                 should.not.exist(err);
@@ -870,8 +793,7 @@ describe('RabbitMQ Helper Tests', function () {
                         return {
                             connect: function (callback) {
                                 var connect = {
-                                    on: function () {
-                                    },
+                                    on: function () {},
                                     exchange: function (name, options, callback) {
                                         var exchange = {
                                             send: function (routingKey, message, options, callback) {
@@ -886,8 +808,7 @@ describe('RabbitMQ Helper Tests', function () {
                                             bindQueue: function (exchange, routingKey, callback) {
                                                 callback();
                                             },
-                                            listen: function () {
-                                            }
+                                            listen: function () {}
                                         };
                                         callback();
                                         return queue;
@@ -910,13 +831,10 @@ describe('RabbitMQ Helper Tests', function () {
                     var myHelper;
                     var eventHandlers = {
                         initialized: function () {
-                            myHelper.setQueueHandler(function () {
-                            });
+                            myHelper.setQueueHandler(function () {});
                         },
-                        reconnected: function () {
-                        },
-                        error: function () {
-                        },
+                        reconnected: function () {},
+                        error: function () {},
                         'queue-listening': function () {
                             myHelper.publishMessage({}, function (err, delivered) {
                                 should.exist(err);
@@ -934,8 +852,7 @@ describe('RabbitMQ Helper Tests', function () {
                         return {
                             connect: function (callback) {
                                 var connect = {
-                                    on: function () {
-                                    },
+                                    on: function () {},
                                     exchange: function (name, options, callback) {
                                         var exchange = {
                                             send: function (routingKey, message, options, callback) {
@@ -950,8 +867,7 @@ describe('RabbitMQ Helper Tests', function () {
                                             bindQueue: function (exchange, routingKey, callback) {
                                                 callback();
                                             },
-                                            listen: function () {
-                                            }
+                                            listen: function () {}
                                         };
                                         callback();
                                         return queue;
