@@ -35,7 +35,8 @@
     },
     "private": true,
     "dependencies": {
-        "rabbit-wrapper": "git://github.com/tagular/node-rabbit-wrap.git#1.1.0",
-        "joi": "~4.5.0"
+        "cloneextend": "0.0.3",
+        "joi": "^4.6.1",
+        "rabbit-wrapper": "git://github.com/tagular/node-rabbit-wrap.git#1.1.0"
     }
 }

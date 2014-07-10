@@ -7,30 +7,32 @@ process.env.NODE_ENV = 'test';
 var stubs = {};
 var should = require('should');
 
-function generateConfig(mocked) {
+function generateOptions(mocked) {
     var result = {
-        connection: {
-            host: '127.0.0.1',
-            options: {
-                heartbeat: 5,
-                reconnect: true
-            }
-        },
-        exchange: {
-            name: 'testing-exchange',
-            options: {
-                type: 'direct',
-                durable: false,
-                autoDelete: false
-            }
-        },
-        queue: {
-            name: 'testing-queue',
-            options: {
-                routingKey: 'event-routing',
-                durable: true,
-                autoDelete: false,
-                prefetchCount: 1
+        config: {
+            connection: {
+                host: '127.0.0.1',
+                options: {
+                    heartbeat: 5,
+                    reconnect: true
+                }
+            },
+            exchange: {
+                name: 'testing-exchange',
+                options: {
+                    type: 'direct',
+                    durable: false,
+                    autoDelete: false
+                }
+            },
+            queue: {
+                name: 'testing-queue',
+                options: {
+                    routingKey: 'event-routing',
+                    durable: true,
+                    autoDelete: false,
+                    prefetchCount: 1
+                }
             }
         }
     };
@@ -59,30 +61,24 @@ describe('RabbitMQ Helper Tests', function () {
     });
     describe('Initializing', function () {
         describe('with no "config"', function () {
-            it('should throw an error', function (done) {
-                try {
-                    rabbitMQHelper();
-                }
-                catch (err) {
-                    done();
-                }
+            it('should be succesful', function (done) {
+                rabbitMQHelper();
+                done();
             });
         });
         describe('with a proper "config" and no event handlers', function () {
             it('should be successful', function (done) {
-                var test = rabbitMQHelper(generateConfig(true));
-                JSON.stringify(test.options).should.equal(JSON.stringify(generateConfig(true)));
+                rabbitMQHelper(generateOptions(true));
                 done();
             });
         });
         describe('with a proper "config" and event handlers', function () {
             it('should be successful', function (done) {
-                var test = rabbitMQHelper(generateConfig(true), {
+                rabbitMQHelper(generateOptions(true), {
                     initialized: function () {},
                     reconnected: function () {},
                     error: function () {}
                 });
-                JSON.stringify(test.options).should.equal(JSON.stringify(generateConfig(true)));
                 done();
             });
         });
@@ -104,7 +100,7 @@ describe('RabbitMQ Helper Tests', function () {
                     var reconnectedSpy = sinon.spy(eventHandlers, 'reconnected');
                     var errorSpy = sinon.spy(eventHandlers, 'error');
                     var queueListeningSpy = sinon.spy(eventHandlers, 'queue-listening');
-                    myHelper = rabbitMQHelper(generateConfig(true), eventHandlers);
+                    myHelper = rabbitMQHelper(generateOptions(true), eventHandlers);
                     stubs.rabbit = sinon.stub(myHelper, 'rabbit', function () {
                         return {
                             connect: function (callback) {
@@ -155,7 +151,7 @@ describe('RabbitMQ Helper Tests', function () {
                     var reconnectedSpy = sinon.spy(eventHandlers, 'reconnected');
                     var errorSpy = sinon.spy(eventHandlers, 'error');
                     var queueListeningSpy = sinon.spy(eventHandlers, 'queue-listening');
-                    myHelper = rabbitMQHelper(generateConfig(true), eventHandlers);
+                    myHelper = rabbitMQHelper(generateOptions(true), eventHandlers);
                     stubs.rabbit = sinon.stub(myHelper, 'rabbit', function () {
                         return {
                             connect: function (callback) {
@@ -194,7 +190,8 @@ describe('RabbitMQ Helper Tests', function () {
     describe('Event Handling', function () {
         describe('[initialized]', function () {
             it('should fire the "initialized" when fully initialized', function (done) {
-                var config = generateConfig(true);
+                var options = generateOptions(true);
+                var config = options.config;
                 var eventHandlers = {
                     initialized: function () {},
                     reconnected: function () {},
@@ -203,7 +200,7 @@ describe('RabbitMQ Helper Tests', function () {
                 var initializedSpy = sinon.spy(eventHandlers, 'initialized');
                 var reconnectedSpy = sinon.spy(eventHandlers, 'reconnected');
                 var errorSpy = sinon.spy(eventHandlers, 'error');
-                helper = rabbitMQHelper(generateConfig(true), eventHandlers);
+                helper = rabbitMQHelper(generateOptions(true), eventHandlers);
                 stubs.rabbit = sinon.stub(helper, 'rabbit', function () {
                     return {
                         connect: function (callback) {
@@ -244,7 +241,8 @@ describe('RabbitMQ Helper Tests', function () {
         describe('[reconnected]', function () {
             it('should fire the "reconnected" when rabbitmq comes back online', function (done) {
                 var called = false;
-                var config = generateConfig(true);
+                var options = generateOptions(true);
+                var config = options.config;
                 var eventHandlers = {
                     initialized: function () {},
                     reconnected: function () {},
@@ -253,7 +251,7 @@ describe('RabbitMQ Helper Tests', function () {
                 var initializedSpy = sinon.spy(eventHandlers, 'initialized');
                 var reconnectedSpy = sinon.spy(eventHandlers, 'reconnected');
                 var errorSpy = sinon.spy(eventHandlers, 'error');
-                helper = rabbitMQHelper(generateConfig(true), eventHandlers);
+                helper = rabbitMQHelper(generateOptions(true), eventHandlers);
                 stubs.rabbit = sinon.stub(helper, 'rabbit', function () {
                     return {
                         connect: function (callback) {
@@ -314,7 +312,7 @@ describe('RabbitMQ Helper Tests', function () {
                     var initializedSpy = sinon.spy(eventHandlers, 'initialized');
                     var reconnectedSpy = sinon.spy(eventHandlers, 'reconnected');
                     var errorSpy = sinon.spy(eventHandlers, 'error');
-                    helper = rabbitMQHelper(generateConfig(true), eventHandlers);
+                    helper = rabbitMQHelper(generateOptions(true), eventHandlers);
                     stubs.rabbit = sinon.stub(helper, 'rabbit', function () {
                         return {
                             connect: function (callback) {
@@ -333,7 +331,8 @@ describe('RabbitMQ Helper Tests', function () {
             describe('and it\'s a "connection error"', function () {
                 it('should fire the "error" event once', function (done) {
                     var called = false;
-                    var config = generateConfig(true);
+                    var options = generateOptions(true);
+                    var config = options.config;
                     var eventHandlers = {
                         initialized: function () {},
                         reconnected: function () {},
@@ -342,7 +341,7 @@ describe('RabbitMQ Helper Tests', function () {
                     var initializedSpy = sinon.spy(eventHandlers, 'initialized');
                     var reconnectedSpy = sinon.spy(eventHandlers, 'reconnected');
                     var errorSpy = sinon.spy(eventHandlers, 'error');
-                    helper = rabbitMQHelper(generateConfig(true), eventHandlers);
+                    helper = rabbitMQHelper(generateOptions(true), eventHandlers);
                     stubs.rabbit = sinon.stub(helper, 'rabbit', function () {
                         return {
                             connect: function (callback) {
@@ -392,7 +391,8 @@ describe('RabbitMQ Helper Tests', function () {
             describe('and it\'s a "exchange error"', function () {
                 it('should fire the "error" event once', function (done) {
                     var called = false;
-                    var config = generateConfig(true);
+                    var options = generateOptions(true);
+                    var config = options.config;
                     var eventHandlers = {
                         initialized: function () {},
                         reconnected: function () {},
@@ -401,7 +401,7 @@ describe('RabbitMQ Helper Tests', function () {
                     var initializedSpy = sinon.spy(eventHandlers, 'initialized');
                     var reconnectedSpy = sinon.spy(eventHandlers, 'reconnected');
                     var errorSpy = sinon.spy(eventHandlers, 'error');
-                    helper = rabbitMQHelper(generateConfig(true), eventHandlers);
+                    helper = rabbitMQHelper(generateOptions(true), eventHandlers);
                     stubs.rabbit = sinon.stub(helper, 'rabbit', function () {
                         return {
                             connect: function (callback) {
@@ -451,7 +451,7 @@ describe('RabbitMQ Helper Tests', function () {
                     var initializedSpy = sinon.spy(eventHandlers, 'initialized');
                     var reconnectedSpy = sinon.spy(eventHandlers, 'reconnected');
                     var errorSpy = sinon.spy(eventHandlers, 'error');
-                    helper = rabbitMQHelper(generateConfig(true), eventHandlers);
+                    helper = rabbitMQHelper(generateOptions(true), eventHandlers);
                     stubs.rabbit = sinon.stub(helper, 'rabbit', function () {
                         return {
                             connect: function (callback) {
@@ -484,7 +484,8 @@ describe('RabbitMQ Helper Tests', function () {
     describe('Subscriber Processing', function () {
         describe('when picking up a queue item', function () {
             it('should have a "message" object', function (done) {
-                var config = generateConfig();
+                var options = generateOptions(true);
+                var config = options.config;
                 var myHelper;
                 var eventHandlers = {
                     initialized: function () {
@@ -502,7 +503,7 @@ describe('RabbitMQ Helper Tests', function () {
                 var reconnectedSpy = sinon.spy(eventHandlers, 'reconnected');
                 var errorSpy = sinon.spy(eventHandlers, 'error');
                 var queueListeningSpy = sinon.spy(eventHandlers, 'queue-listening');
-                myHelper = rabbitMQHelper(generateConfig(true), eventHandlers);
+                myHelper = rabbitMQHelper(generateOptions(true), eventHandlers);
                 stubs.rabbit = sinon.stub(myHelper, 'rabbit', function () {
                     return {
                         connect: function (callback) {
@@ -540,7 +541,8 @@ describe('RabbitMQ Helper Tests', function () {
                 queueListeningSpy.callCount.should.equal(1);
             });
             it('should have a "ack" function', function (done) {
-                var config = generateConfig();
+                var options = generateOptions(true);
+                var config = options.config;
                 var myHelper;
                 var eventHandlers = {
                     initialized: function () {
@@ -558,7 +560,7 @@ describe('RabbitMQ Helper Tests', function () {
                 var reconnectedSpy = sinon.spy(eventHandlers, 'reconnected');
                 var errorSpy = sinon.spy(eventHandlers, 'error');
                 var queueListeningSpy = sinon.spy(eventHandlers, 'queue-listening');
-                myHelper = rabbitMQHelper(generateConfig(true), eventHandlers);
+                myHelper = rabbitMQHelper(generateOptions(true), eventHandlers);
                 stubs.rabbit = sinon.stub(myHelper, 'rabbit', function () {
                     return {
                         connect: function (callback) {
@@ -596,7 +598,8 @@ describe('RabbitMQ Helper Tests', function () {
                 queueListeningSpy.callCount.should.equal(1);
             });
             it('should have a "headers" object', function (done) {
-                var config = generateConfig();
+                var options = generateOptions(true);
+                var config = options.config;
                 var myHelper;
                 var eventHandlers = {
                     initialized: function () {
@@ -614,7 +617,7 @@ describe('RabbitMQ Helper Tests', function () {
                 var reconnectedSpy = sinon.spy(eventHandlers, 'reconnected');
                 var errorSpy = sinon.spy(eventHandlers, 'error');
                 var queueListeningSpy = sinon.spy(eventHandlers, 'queue-listening');
-                myHelper = rabbitMQHelper(generateConfig(true), eventHandlers);
+                myHelper = rabbitMQHelper(generateOptions(true), eventHandlers);
                 stubs.rabbit = sinon.stub(myHelper, 'rabbit', function () {
                     return {
                         connect: function (callback) {
@@ -652,7 +655,8 @@ describe('RabbitMQ Helper Tests', function () {
                 queueListeningSpy.callCount.should.equal(1);
             });
             it('should have a "fields" object', function (done) {
-                var config = generateConfig();
+                var options = generateOptions(true);
+                var config = options.config;
                 var myHelper;
                 var eventHandlers = {
                     initialized: function () {
@@ -670,7 +674,7 @@ describe('RabbitMQ Helper Tests', function () {
                 var reconnectedSpy = sinon.spy(eventHandlers, 'reconnected');
                 var errorSpy = sinon.spy(eventHandlers, 'error');
                 var queueListeningSpy = sinon.spy(eventHandlers, 'queue-listening');
-                myHelper = rabbitMQHelper(generateConfig(true), eventHandlers);
+                myHelper = rabbitMQHelper(generateOptions(true), eventHandlers);
                 stubs.rabbit = sinon.stub(myHelper, 'rabbit', function () {
                     return {
                         connect: function (callback) {
@@ -708,7 +712,8 @@ describe('RabbitMQ Helper Tests', function () {
                 queueListeningSpy.callCount.should.equal(1);
             });
             it('should have a "m" object', function (done) {
-                var config = generateConfig();
+                var options = generateOptions(true);
+                var config = options.config;
                 var myHelper;
                 var eventHandlers = {
                     initialized: function () {
@@ -726,7 +731,7 @@ describe('RabbitMQ Helper Tests', function () {
                 var reconnectedSpy = sinon.spy(eventHandlers, 'reconnected');
                 var errorSpy = sinon.spy(eventHandlers, 'error');
                 var queueListeningSpy = sinon.spy(eventHandlers, 'queue-listening');
-                myHelper = rabbitMQHelper(generateConfig(true), eventHandlers);
+                myHelper = rabbitMQHelper(generateOptions(true), eventHandlers);
                 stubs.rabbit = sinon.stub(myHelper, 'rabbit', function () {
                     return {
                         connect: function (callback) {
@@ -788,7 +793,7 @@ describe('RabbitMQ Helper Tests', function () {
                     var reconnectedSpy = sinon.spy(eventHandlers, 'reconnected');
                     var errorSpy = sinon.spy(eventHandlers, 'error');
                     var queueListeningSpy = sinon.spy(eventHandlers, 'queue-listening');
-                    myHelper = rabbitMQHelper(generateConfig(true), eventHandlers);
+                    myHelper = rabbitMQHelper(generateOptions(true), eventHandlers);
                     stubs.rabbit = sinon.stub(myHelper, 'rabbit', function () {
                         return {
                             connect: function (callback) {
@@ -847,7 +852,7 @@ describe('RabbitMQ Helper Tests', function () {
                     var reconnectedSpy = sinon.spy(eventHandlers, 'reconnected');
                     var errorSpy = sinon.spy(eventHandlers, 'error');
                     var queueListeningSpy = sinon.spy(eventHandlers, 'queue-listening');
-                    myHelper = rabbitMQHelper(generateConfig(true), eventHandlers);
+                    myHelper = rabbitMQHelper(generateOptions(true), eventHandlers);
                     stubs.rabbit = sinon.stub(myHelper, 'rabbit', function () {
                         return {
                             connect: function (callback) {
@@ -888,7 +893,7 @@ describe('RabbitMQ Helper Tests', function () {
         });
         describe('when the helper is not ensured', function () {
             it('should callback an error', function (done) {
-                helper = rabbitMQHelper(generateConfig(true));
+                helper = rabbitMQHelper(generateOptions(true));
                 helper.publishMessage({}, function (err) {
                     should.exist(err);
                     done();
