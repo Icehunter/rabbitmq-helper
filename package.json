@@ -24,19 +24,18 @@
         "grunt-contrib-jshint": "^0.10.0",
         "grunt-contrib-watch": "^0.6.1",
         "grunt-env": "^0.4.1",
-        "grunt-jsbeautifier": "^0.2.7",
         "grunt-mocha-test": "^0.11.0",
-        "grunt-notify": "^0.3.0",
-        "grunt-shell": "^0.7.0",
+        "grunt-notify": "^0.3.1",
+        "grunt-shell": "^1.0.1",
         "load-grunt-tasks": "^0.6.0",
-        "mocha": "^1.20.1",
+        "mocha": "^1.21.4",
         "should": "^4.0.4",
-        "sinon": "^1.10.2"
+        "sinon": "^1.10.3"
     },
     "private": true,
     "dependencies": {
         "cloneextend": "0.0.3",
-        "joi": "^4.6.1",
-        "rabbit-wrapper": "git://github.com/tagular/node-rabbit-wrap.git#1.1.0"
+        "joi": "^4.6.2",
+        "rabbit-wrapper": "git://github.com/tagular/node-rabbit-wrap.git#1.1.1"
     }
 }
