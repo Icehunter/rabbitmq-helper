@@ -37,12 +37,12 @@ function generateOptions(mocked) {
         }
     };
     if (mocked) {
-        result.mocking = {};
+        result.mocking = true;
     }
     return result;
 }
 
-var rabbitMQHelper = require('../lib/rabbitmq-helper');
+var rabbitMQHelper = require('../index');
 var helper;
 var sinon = require('sinon');
 
@@ -62,7 +62,9 @@ describe('RabbitMQ Helper Tests', function () {
     describe('Initializing', function () {
         describe('with no "config"', function () {
             it('should be succesful', function (done) {
-                rabbitMQHelper();
+                rabbitMQHelper({
+                    mocking: true
+                });
                 done();
             });
         });
@@ -489,9 +491,9 @@ describe('RabbitMQ Helper Tests', function () {
                 var myHelper;
                 var eventHandlers = {
                     initialized: function () {
-                        myHelper.setQueueHandler(function (queue_item) {
-                            should.exist(queue_item.message);
-                            (queue_item.message.constructor === {}.constructor).should.equal(true);
+                        myHelper.setQueueHandler(function (queueItem) {
+                            should.exist(queueItem.message);
+                            (queueItem.message.constructor === {}.constructor).should.equal(true);
                             done();
                         });
                     },
@@ -546,9 +548,9 @@ describe('RabbitMQ Helper Tests', function () {
                 var myHelper;
                 var eventHandlers = {
                     initialized: function () {
-                        myHelper.setQueueHandler(function (queue_item) {
-                            should.exist(queue_item.ack);
-                            ('function' === typeof queue_item.ack).should.equal(true);
+                        myHelper.setQueueHandler(function (queueItem) {
+                            should.exist(queueItem.ack);
+                            (typeof queueItem.ack === 'function').should.equal(true);
                             done();
                         });
                     },
@@ -603,9 +605,9 @@ describe('RabbitMQ Helper Tests', function () {
                 var myHelper;
                 var eventHandlers = {
                     initialized: function () {
-                        myHelper.setQueueHandler(function (queue_item) {
-                            should.exist(queue_item.headers);
-                            (queue_item.headers.constructor === {}.constructor).should.equal(true);
+                        myHelper.setQueueHandler(function (queueItem) {
+                            should.exist(queueItem.headers);
+                            (queueItem.headers.constructor === {}.constructor).should.equal(true);
                             done();
                         });
                     },
@@ -660,9 +662,9 @@ describe('RabbitMQ Helper Tests', function () {
                 var myHelper;
                 var eventHandlers = {
                     initialized: function () {
-                        myHelper.setQueueHandler(function (queue_item) {
-                            should.exist(queue_item.fields);
-                            (queue_item.fields.constructor === {}.constructor).should.equal(true);
+                        myHelper.setQueueHandler(function (queueItem) {
+                            should.exist(queueItem.fields);
+                            (queueItem.fields.constructor === {}.constructor).should.equal(true);
                             done();
                         });
                     },
@@ -717,9 +719,9 @@ describe('RabbitMQ Helper Tests', function () {
                 var myHelper;
                 var eventHandlers = {
                     initialized: function () {
-                        myHelper.setQueueHandler(function (queue_item) {
-                            should.exist(queue_item.m);
-                            (queue_item.m.constructor === {}.constructor).should.equal(true);
+                        myHelper.setQueueHandler(function (queueItem) {
+                            should.exist(queueItem.m);
+                            (queueItem.m.constructor === {}.constructor).should.equal(true);
                             done();
                         });
                     },

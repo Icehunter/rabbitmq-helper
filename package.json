@@ -1,13 +1,13 @@
 {
-    "name": "rabbitmq-helper",
+    "name": "@icehunter/rabbitmq-helper",
     "version": "1.0.0",
     "description": "wrapper of node-rabbit-wrap that wraps node.amqp",
-    "main": "lib/rabbitmq-helper.js",
+    "main": "index.js",
     "directories": {
         "test": "test"
     },
     "scripts": {
-        "test": "grunt test"
+        "test": "gulp test"
     },
     "repository": {
         "type": "git",
@@ -19,23 +19,20 @@
     "author": "Ryan Wilson",
     "license": "MIT",
     "devDependencies": {
-        "blanket": "^1.1.6",
-        "grunt": "^0.4.5",
-        "grunt-contrib-jshint": "^0.10.0",
-        "grunt-contrib-watch": "^0.6.1",
-        "grunt-env": "^0.4.1",
-        "grunt-mocha-test": "^0.11.0",
-        "grunt-notify": "^0.3.1",
-        "grunt-shell": "^1.0.1",
-        "load-grunt-tasks": "^0.6.0",
-        "mocha": "^1.21.4",
-        "should": "^4.0.4",
-        "sinon": "^1.10.3"
+        "blanket": "*",
+        "gulp": "*",
+        "gulp-coverage": "*",
+        "gulp-eslint": "*",
+        "gulp-jsbeautifier": "*",
+        "gulp-mocha": "*",
+        "gulp-param": "*",
+        "mocha": "*",
+        "should": "*",
+        "sinon": "*"
     },
-    "private": true,
     "dependencies": {
         "cloneextend": "0.0.3",
-        "joi": "^4.6.2",
-        "rabbit-wrapper": "git://github.com/tagular/node-rabbit-wrap.git#1.1.1"
+        "joi": "^6.6.1",
+        "rabbit-wrapper": "git://github.com/tagular/node-rabbit-wrap.git#1.2.2"
     }
 }

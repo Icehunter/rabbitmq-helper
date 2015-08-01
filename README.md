@@ -1,13 +1,14 @@
 # rabbitmq-helper
-
 This is a just a abstracted wrapper of node-rabbit-wrap (which in turn wraps node.amqp).
 
-### Installation:
+## Installation:
+
 ```text
-npm i git://github.com/icehunter/rabbitmq-helper -S
+npm i @icehunter/rabbitmq-helper -S
 ```
 
-### Options:
+## Options:
+
 ```javascript
 var options = {
     config: {
@@ -37,14 +38,16 @@ var options = {
     }
 };
 ```
-### Config Notes:
+
+## Config Notes:
 Based on joi validation all fields are optional but types are set to that what you see above. You can change this at anytime here:
 
-https://github.com/Icehunter/rabbitmq-helper/blob/master/lib/validators/config.js
+[https://github.com/Icehunter/rabbitmq-helper/blob/master/lib/validators/config.js](https://github.com/Icehunter/rabbitmq-helper/blob/master/lib/validators/config.js)
 
 If you don't provide one or more of those values the default is used in place.
 
-### Usage:
+## Usage:
+
 ```javascript
 // setup helper class
 var rabbitMQHelper = require('rabbitmq-helper');
