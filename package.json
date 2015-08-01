@@ -1,6 +1,6 @@
 {
     "name": "@icehunter/rabbitmq-helper",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "description": "wrapper of node-rabbit-wrap that wraps node.amqp",
     "main": "index.js",
     "directories": {

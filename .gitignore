@@ -1,4 +1,5 @@
-node_modules/*
 .coverData/*
 debug/*
+node_modules/*
 reports/*
+.coverrun
