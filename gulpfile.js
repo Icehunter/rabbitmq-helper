@@ -19,9 +19,10 @@ var paths = {
 };
 
 gulp.task('beautify', function () {
-    return gulp.src(paths.js, {
-            base: './'
-        })
+    var srcOptions = {
+        base: './'
+    };
+    return gulp.src(paths.js, srcOptions)
         .pipe(jsbeautify({
             config: '.jsbeautifyrc',
             mode: 'VERIFY_AND_WRITE'
@@ -30,9 +31,10 @@ gulp.task('beautify', function () {
 });
 
 gulp.task('lint-js', ['beautify'], function () {
-    return gulp.src(paths.js.concat([
-            './test/**/*.js'
-        ]))
+    var src = [
+        './test/**/*.js'
+    ];
+    return gulp.src(paths.js.concat(src))
         .pipe(eslint({
             useEslintrc: true
         }))
@@ -41,9 +43,10 @@ gulp.task('lint-js', ['beautify'], function () {
 });
 
 gulp.task('test', function () {
-    return gulp.src(paths.test, {
-            read: false
-        })
+    var srcOptions = {
+        read: false
+    };
+    return gulp.src(paths.test, srcOptions)
         .pipe(cover.instrument({
             pattern: paths.js,
             debugDirectory: 'debug'

@@ -1,38 +1,41 @@
 {
-  "name": "@icehunter/rabbitmq-helper",
-  "version": "1.0.1",
-  "description": "wrapper of node-rabbit-wrap that wraps node.amqp",
-  "main": "index.js",
-  "directories": {
-    "test": "test"
-  },
-  "scripts": {
-    "test": "gulp test"
-  },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/Icehunter/rabbitmq-helper.git"
-  },
-  "bugs": {
-    "url": "https://github.com/Icehunter/rabbitmq-helper/issues"
-  },
-  "author": "Ryan Wilson",
-  "license": "MIT",
-  "devDependencies": {
-    "blanket": "*",
-    "gulp": "*",
-    "gulp-coverage": "*",
-    "gulp-eslint": "*",
-    "gulp-jsbeautifier": "*",
-    "gulp-mocha": "*",
-    "gulp-param": "*",
-    "mocha": "*",
-    "should": "*",
-    "sinon": "*"
-  },
-  "dependencies": {
-    "cloneextend": "0.0.3",
-    "joi": "^7.2.2",
-    "rabbit-wrapper": "git://github.com/tagular/node-rabbit-wrap.git#1.2.2"
-  }
+    "name": "@icehunter/rabbitmq-helper",
+    "version": "2.0.0",
+    "description": "wrapper of node-rabbit-wrap that wraps node.amqp",
+    "main": "index.js",
+    "directories": {
+        "test": "test"
+    },
+    "scripts": {
+        "test": "gulp test"
+    },
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/Icehunter/rabbitmq-helper.git"
+    },
+    "bugs": {
+        "url": "https://github.com/Icehunter/rabbitmq-helper/issues"
+    },
+    "author": "Ryan Wilson",
+    "license": "MIT",
+    "devDependencies": {
+        "blanket": "*",
+        "gulp": "*",
+        "gulp-coverage": "*",
+        "gulp-eslint": "*",
+        "gulp-jsbeautifier": "*",
+        "gulp-mocha": "*",
+        "gulp-param": "*",
+        "mocha": "*",
+        "should": "*",
+        "sinon": "*"
+    },
+    "dependencies": {
+        "cloneextend": "0.0.3",
+        "joi": "^7.2.2",
+        "rabbit-wrapper": "git://github.com/tagular/node-rabbit-wrap.git#1.2.2"
+    },
+    "engines": {
+        "node": ">=5.0.0"
+    }
 }
